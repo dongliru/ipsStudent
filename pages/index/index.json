@@ -1,0 +1,8 @@
+{
+  "usingComponents": {
+    "chart-bar": "/components/chartBar/chartBar",
+    "chart-line":"/components/chartLine/chartLine",
+    "chart-line2":"/components/chartLine2/chartLine2",
+    "ec-canvas": "/ec-canvas/ec-canvas"
+  }
+}

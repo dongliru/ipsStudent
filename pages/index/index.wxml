@@ -1,0 +1,165 @@
+<view>
+  <view class="userInfo clearfix" :class="{'hide':this.hasHeader}">
+    <view class="userImage">
+      <!-- <image></image> -->
+      <b>哈哈</b>
+    </view>
+    <view class="userText">
+      <view class="firstTitle">{{userInfoObj.userName}}</view>
+      <view class="subTitle subTitle1" wx:if="{{this.options.userName}}">就读：{{userInfoObj.userAttend}}</view>
+      <view class="subTitle">目标：{{userInfoObj.userGoal}}</view>
+    </view>
+  </view>
+
+  <view class="info-box">
+    <view class="info-title">
+      <p class="report-title btn-down" wx:if="hasHeader">{{currentClassList.className}}</p>
+      <p class="report-title" wx:else="!hasHeader">{{currentClassList.className}}</p>
+      <p class="title-prompt" wx:if="stuAnswer.mathAnswerNum <= 30">学生答题量≤30% 数据仅供参考</p>
+      <view class="class-list" wx:if="showClassList">
+        <ul>
+          <li wx:for="{{listClass}}" wx:key="{{index}}" :class="currentClassList.classId == list.classId ? 'active' : '' ">{{item.className}}</li>
+        </ul>
+      </view>
+    </view>
+    <view>
+      <p class="class-rank" wx:if="{{stuAnswer.answerNum > 0}}">第
+        <span>{{stuAnswer.rank}}</span> 名 / 共{{stuAnswer.stuNum}}人</p>
+      <p class="class-rank no-rank" wx:else="{{stuAnswer.answerNum <= 0}}">
+        <span>暂无排名</span>
+      </p>
+      <p class="class-num" wx:if="{{stuAnswer.answerNum}}">第1-{{currentClassList.passCount}}讲 班级累计排名</p>
+    </view>
+  </view>
+
+  <view>
+    <view class="answer-data">
+      <ul class="box">
+        <!-- :style="knlgRightRatio.length > 2 ? 'width:120%; white-space: nowrap;' : 'width:100%;white-space: normal;'"-->
+        <li>
+          <p class="answer-title">首次正确率</p>
+          <p class="answer-num">{{stuAnswer.mathStuAnswer >= 85 ? '很高' :(stuAnswer.mathStuAnswer
+            < 85 && stuAnswer.mathStuAnswer>=70) ? '较高' : (stuAnswer.mathStuAnswer
+              < 70 && stuAnswer.mathStuAnswer>= 50 ? '一般':(stuAnswer.mathStuAnswer
+                < 50 && stuAnswer.mathStuAnswer>= 35 ? '较低' : '低')) }}</p>
+          <p class="conclusion">{{stuAnswer.mathStuAnswer}}%</p>
+        </li>
+        <li>
+          <p class="answer-title">作业提交</p>
+          <p class="answer-num">{{stuAnswer.mathhomework >= 70 ? '积极' : (stuAnswer.mathhomework
+            < 70 && stuAnswer.mathhomework>=40 ? '一般' :'不积极')}}</p>
+          <p class="conclusion">{{stuAnswer.answerNum > 0 ? stuAnswer.submitHomeworkNum : 0}}/{{stuAnswer.answerNum > 0 ? stuAnswer.homeworkNum : 0}}</p>
+        </li>
+        <li style="border-right: none;">
+          <ul>
+            <p class="answer-title">相对薄弱知识点</p>
+            <li wx:if="{{knlgRightRatio.length == 0}}">
+              <p class="answer-num">无</p>
+              <p class="conclusion" style="color: rgba(255,255,255,0)">无</p>
+            </li>
+            <li wx:for="{{knlgRightRatio}}" wx:key="{{index}}" wx:if="{{index<1}}" style="margin-right: 20px;">
+              <p class="answer-num">{{item.name}}</p>
+              <p class="conclusion">{{item.rightRatio}}%</p>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </view>
+    <view class="bottom-line"></view>
+
+    <view class="charts-box">
+      <p class="h6">课中表现</p>
+      <view class="line_02" wx:if="{{performance.onScreens}}">
+        <span>本学期累积数据</span>
+      </view>
+      <view class="line_03" wx:else>
+        <span>暂时没有互动数据</span>
+      </view>
+      <view class="chart-legend" wx:if="{{performance.onScreens}}">
+        <p class="legend-circle blue-circle"></p>
+        <span>个人</span>
+        <p class="legend-circle green-circle"></p>
+        <span>班级平均</span>
+      </view>
+    </view>
+    <!-- <charts-bar v-if="performance.onScreens" :chartsData="performance.onScreens"></charts-bar> -->
+    <view>
+      <view class="line_02" wx:if="{{performance.remarkTags}}">
+        <span>课中问答标签</span>
+      </view>
+      <view class="line_04" wx:else>
+        <span>暂时没有问答标签</span>
+      </view>
+      <ul class="class-label">
+        <li wx:for="{{performance.remarkTags}}" wx:key="{{index}}" :class="remarkTags.type == 0 ? 'green-tag' : '' ">{{item.tagName}} {{item.times}}</li>
+      </ul>
+    </view>
+    <view class="bottom-line"></view>
+    <view class="charts-box">
+      <p class="h6">课次排名走势
+        <p class="title-right">
+          <span :class="activeCharts == 0 ? 'active' : ''">本班级</span>
+          <span :class="activeCharts == 1 ? 'active' : ''">本地同班型</span>
+        </p>
+      </p>
+      <view class="container">
+       <ec-canvas id="mychart-dom-bar" canvas-id="mychart-bar" ec="{{ ec1}}"></ec-canvas>
+      </view>
+    </view>
+    <view class="bottom-line"></view>
+
+    <view class="charts-box">
+      <p class="h6">课次正确率走势
+        <p class="title-right">
+          <span :class="activeCharts2 == 0 ? 'active' : ''">首次</span>
+          <span :class="activeCharts2 == 1 ? 'active' : ''">订正后</span>
+        </p>
+      </p>
+      <view class="chart-legend" wx:if="{{stuAnswer.answerNum}}">
+        <p class="legend-circle blue-circle"></p>
+        <span>个人</span>
+        <p class="legend-circle green-circle"></p>
+        <span>班级平均</span>
+      </view>
+ <ec-canvas wx:if="{{chartsData}}" id="mychart-dom-bar" canvas-id="mychart-bar" ec="{{ ec }}"></ec-canvas>
+    </view>
+    <view class="bottom-line"></view>
+    <view class="homework-commit">
+      <p class="h6">作业提交讲数 {{stuAnswer.answerNum > 0 ? stuAnswer.submitHomeworkNum : 0}}，
+        <span wx:if="{{stuAnswer.answerNum}}">共需提交 {{stuAnswer.homeworkNum}} 讲</span>
+      </p>
+      <p class="remind" wx:if="{{stuAnswer.answerNum}}">以下为未提交讲次</p>
+      <view class="homework-list" wx:for="{{homeworkCourse}}" wx:key="{{index}}" wx:if="index < showHomework">
+        第{{item.order}}讲：{{item.name}}
+      </view>
+      <view wx:if="{{homeworkCourse.length > 3}}">
+        <view class="fold-btn" wx:if="{{showHomework <= 3 }}">
+          <img src="../assets/btn_down.png" />
+        </view>
+        <view class="fold-btn" wx:else>
+          <image src="../assets/btn_up.png"></image>
+        </view>
+      </view>
+    </view>
+
+    <view class="knowledge-data">
+      <p class="h6">本学期知识点</p>
+      <view class="homework-commit" style="border-bottom: none;" wx:if="{{knlgRightRatio && knlgRightRatio.length == 0}}">无</view>
+      <view class="knowledge-list" wx:for="{{knlgRightRatio}}" wx:key="{{index}}" bindtap='knowledge(index)'>
+        <view class="knowledge-title">
+          <p>{{item.name}}</p>
+          <span>{{item.rightRatio}}%
+            <image wx:if="{{knowledegIndex == index}}" src="/assets/btn_up.png" style="width:18px;height:18px" ></image>
+            <image wx:else src="/assets/btn_down.png" style="width:18px;height:18px"></image>
+          </span>
+        </view>
+        <view style="background: #F8F8FA;">
+          <view class="knowledge-child" wx:if="{{knowledegIndex == index}}" wx:for="{{knlgRight.childKnowledge}}" wx:key="{{index}}">
+            <p class="knowledge-name">{{item.name}}</p>
+            <span>{{item.rightRatio}}%</span>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>
