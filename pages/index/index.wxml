@@ -145,7 +145,7 @@
     <view class="knowledge-data">
       <p class="h6">本学期知识点</p>
       <view class="homework-commit" style="border-bottom: none;" wx:if="{{knlgRightRatio && knlgRightRatio.length == 0}}">无</view>
-      <view class="knowledge-list" wx:for="{{knlgRightRatio}}" wx:key="{{index}}" bindtap='knowledge(index)'>
+      <view class="knowledge-list" wx:for="{{knlgRightRatio}}" wx:key="index" bindtap='knowledge' data-index="{{index}}">
         <view class="knowledge-title">
           <p>{{item.name}}</p>
           <span>{{item.rightRatio}}%
@@ -154,9 +154,9 @@
           </span>
         </view>
         <view style="background: #F8F8FA;">
-          <view class="knowledge-child" wx:if="{{knowledegIndex == index}}" wx:for="{{knlgRight.childKnowledge}}" wx:key="{{index}}">
-            <p class="knowledge-name">{{item.name}}</p>
-            <span>{{item.rightRatio}}%</span>
+          <view class="knowledge-child"  wx:for="{{item.childKnowledge}}"  wx:key="idx" wx:for-item="itemName">
+            <p class="knowledge-name">{{itemName.name}}</p>
+            <span>{{itemName.rightRatio}}%</span>
           </view>
         </view>
       </view>

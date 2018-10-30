@@ -461,14 +461,15 @@ Page({
         console.log("课次排名走势", error);
       });
   },
-  knowledge(index) {
-    console.log(1111);
-    if (this.data.knowledegIndex == index) {
+  knowledge(e) {
+    // console.log(index)
+    // console.log(e.currentTarget.dataset.index,1111)
+    if (this.data.knowledegIndex == e.currentTarget.dataset.index) {
       this.data.knowledegIndex = null;
     } else {
-      this.data.knowledegIndex = index;
-      // this.data.dataClick("学习情况知识点");
+      this.data.knowledegIndex = e.currentTarget.dataset.index;
     }
+    console.log(this.data.knowledegIndex);
   },
   headerToggle() {
     var href = utils.getCurrentPageUrlWithArgs()
